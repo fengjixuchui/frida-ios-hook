@@ -13,6 +13,12 @@ For Android platform: https://github.com/noobpk/frida-android-hook
 | Linux   | :white_check_mark: | sub  	 |
 | Windows | :white_check_mark: | sub	 |
 
+## Compatible with
+| iOS      |   Frida  | Supported         |
+| -------- | -------- | ----------------- |
+|  13.2.3  | 14.2.13  | :white_check_mark:|
+|  14.4.2  | 14.2.13  | :white_check_mark:|
+
 ## Feature
 
 Running with python3.x
@@ -33,6 +39,11 @@ Support both spawn & attach script to process.
     	-d, --dump         Dump decrypt application.ipa
     	-o OUTPUT_IPA, --output=OUTPUT_IPA
                            Specify name of the decrypted IPA
+	
+	[*] Dump memory of Application:
+	
+	--dump-memory		Dump memory of application
+	
 	[*] Information:
 
 	--list-devices    List All Devices
@@ -52,7 +63,7 @@ Support both spawn & attach script to process.
 
 ## Update
 
-Version: 3.3a
+Version: 3.4
 ```
 	[+] Change:
 	
@@ -65,13 +76,19 @@ Version: 3.3a
 		
 	[+] New:
 	
-		[-] Add new new option dump decrypt application.ipa
+		[-] Add new new option dump memory of application
 	
 ```
 
 ## Install & Usage
 
 ```
+	[+] Latest version
+	
+		pip install Frida-iOS-Hook==3.4
+		
+	[+] Develop version
+	
 	1. Git clone https://github.com/noobpk/frida-ios-hook
 	2. cd frida-ios-hook/
 	3. python3 hook.py --help(-h)
@@ -110,3 +127,7 @@ Updated some frida scripts to help you with the pentest ios app. Filter script u
 |21|S|flutter_trace_function.js|iOS flutter trace function|
 |22|S+A|ios-intercept-crypto.js|Intercepts Crypto Operations|
 |23|S+A|ios-intercept-crypto-2.js|Intercepts Crypto Operations 2|
+
+## Disclaimer
+Because I am not a developer, so my coding skills might not be the best. Therefore, if this tool have any issue or not working for you, create an issue and i will try to fix it.
+Any suggestions for new feature and discussions are welcome!

@@ -34,7 +34,7 @@ _|    _|_|    _|_|_|        _|    _|    _|_|      _|_|    _|    _|
 ''')
 
 print ("\033[1;34m[*]___author___: @noobpk\033[1;37m")
-print ("\033[1;34m[*]___version___: 3.3a\033[1;37m")
+print ("\033[1;34m[*]___version___: 3.4\033[1;37m")
 print ("")
 
 def check_platform():
@@ -90,15 +90,26 @@ def handle_del_log():
     except Exception as e:
         logger.error("[x_x] Something went wrong when clear error log. Please clear error log manual.\n Message - {0}".format(e))
 
+def dump_memory(option, process):
+    try:
+        if option != "-h":
+            cmd = shlex.split("python3 " + "lib/dump-memory/fridump.py " + "-U " + option + ' ' + '"' + process + '"')
+        else:
+            cmd = shlex.split("python3 " + "lib/dump-memory/fridump.py " + option)
+        subprocess.call(cmd)
+        sys.exit(0)
+    except Exception as e:
+        logger.error("[x_x] Something went wrong, please check your error message.\n Message - {0}".format(e))
 
 def main():
     try:
         
-        usage = "[>] python3 %prog [options] arg\n\n\r[>] Example for spawn or attach app with -s(--script) options:\npython3 hook.py -p com.apple.AppStore / [-n 'App Store'] -s trace_class.js\n\n\r[>] Example for spawn or attach app with -m(--method) options:\npython3 hook.py -p com.apple.AppStore / [-n 'App Store'] -m app-static\n\n\r[>] Example dump decrypt ipa with -d(--dump) and -o(--output) options:\npython3 hook.py -p com.apple.AppStore / [-n 'App Store'] -d -o App_dump_name"
+        usage = "[>] python3 %prog [options] arg\n\n\r[>] Example for spawn or attach app with -s(--script) options:\npython3 hook.py -p com.apple.AppStore / [-n 'App Store'] -s trace_class.js\n\n\r[>] Example for spawn or attach app with -m(--method) options:\npython3 hook.py -p com.apple.AppStore / [-n 'App Store'] -m app-static\n\n\r[>] Example dump decrypt ipa with -d(--dump) and -o(--output) options:\npython3 hook.py -p com.apple.AppStore / [-n 'App Store'] -d -o App_dump_name\n\n\r[>] Example dump memory of application with --dump-memory and -s(--string) options:\npython3 hook.py -n 'App Store' --dump-memory '-s(--string)'"
         parser = optparse.OptionParser(usage,add_help_option=False)
         info = optparse.OptionGroup(parser,"Information")
         quick = optparse.OptionGroup(parser,"Quick Method")
         dump = optparse.OptionGroup(parser,"Dump decrypt IPA")
+        dumpmemory = optparse.OptionGroup(parser,"Dump memory of Application")
 
         parser.add_option('-h', "--help", action="help", dest="help", help="Show basic help message and exit")
         #Using options -p(--package) for spawn application and load script
@@ -115,7 +126,7 @@ def main():
         parser.add_option("-u", "--update", action="store_true", help="Update iOS hook to the newest version", dest="update")
 
         quick.add_option("-m", "--method", dest="method", type="choice", choices=['app-static','bypass-jb','bypass-ssl','i-url-req','i-crypto'],
-                        help="__app-static: Static Ananlysis Application(-n)\n\n\r\r__bypass-jb: Bypass Jailbreak Detection(-p)\n\n\r\r\r\r\r\r__bypass-ssl: Bypass SSL Pinning(-p)\n\n\n\n\n\n\n\n\n\r\r\r\r\r\r__i-url-req: Intercept URLRequest in App(-p)\n\n\n\n\n\n\n\n\n\r\r\r\r\r\r__i-crypto: Intercept Crypto in App(-p)", metavar="app-static / bypass-jb / bypass-ssl / i-url-req / i-crypto")
+                        help="__app-static: Static Ananlysis Application(-n)\n\n\r\r__bypass-jb: Bypass Jailbreak Detection(-p)\n\n\r\r\r\r\r\r__bypass-ssl: Bypass SSL Pinning(-p)\n\n\n\n\n\n\n\n\n\r\r\r\r\r\r__i-url-req: Intercept URLRequest in App(-n)\n\n\n\n\n\n\n\n\n\r\r\r\r\r\r__i-crypto: Intercept Crypto in App(-p)", metavar="app-static / bypass-jb / bypass-ssl / i-url-req / i-crypto")
         #Some options to get info from device and applications
         info.add_option("--list-devices",
                         action="store_true", help="List All Devices", dest="listdevices")
@@ -130,7 +141,11 @@ def main():
         dump.add_option("-d", "--dump", action="store_true", help="Dump decrypt application.ipa", dest="dumpapp")
         dump.add_option("-o", "--output", action="store" , dest="output_ipa", help="Specify name of the decrypted IPA", metavar="OUTPUT_IPA", type="string")
 
+        #Dump memory of application using the code of Nightbringer21's repo fridump - Link: https://github.com/Nightbringer21/fridump
+        dumpmemory.add_option("--dump-memory", action="store", help="Dump memory of application", dest="dumpmemory")
+
         parser.add_option_group(dump)
+        parser.add_option_group(dumpmemory)
         parser.add_option_group(info)
         parser.add_option_group(quick)
 
@@ -299,7 +314,7 @@ def main():
             sys.exit(0)
 
         #dump decrypt application
-        elif options.package or options.name and options.dumpapp:
+        elif (options.package or options.name) and options.dumpapp:
             logger.info('[*] Dumping...')
             lib = libs[0]
             if options.name is None:
@@ -314,6 +329,10 @@ def main():
                     cmd = shlex.split("python3 " + lib + " " + "'" + options.name + "'" + " -o " + options.output_ipa)
             subprocess.call(cmd)
             sys.exit(0)
+
+        #dump memory application
+        elif options.name and options.dumpmemory:
+            dump_memory(options.dumpmemory, options.name)
 
         else:
             logger.warning("[!] Specify the options. use (-h) for more help!")
